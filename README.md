@@ -9,10 +9,10 @@
 
 ## APK 파일
 
-- 위치: [`apk/드라이브테일_세대차_release.apk`](apk/드라이브테일_세대차_release.apk) (약 77MB, 2026-11-12 출품 준비 버전)
+- 위치: [`apk/드라이브테일_세대차_release.apk`](apk/드라이브테일_세대차_release.apk) (약 11MB, 2026-11-12 출품 준비 버전)
 - 바로 받기: [APK 다운로드](https://github.com/Park8407s/SedaeCha/raw/master/apk/%EB%93%9C%EB%9D%BC%EC%9D%B4%EB%B8%8C%ED%85%8C%EC%9D%BC_%EC%84%B8%EB%8C%80%EC%B0%A8_release.apk)
 - release 빌드입니다. 공모전 제출용이라 디버그 키로 서명했습니다.
-- 용량 대부분은 내장 음성 파일(약 44MB)입니다. 아래 '음성'을 참고하세요.
+- 코드 줄이기(R8)를 켜고 내장 음성을 AAC(m4a)로 압축해 77MB → 약 11MB 로 줄였습니다. 그중 내장 음성이 약 7MB 입니다. 아래 '음성'을 참고하세요.
 
 ## 실행 방법
 
@@ -171,7 +171,7 @@ P + 차속 0   마무리 멘트 → 도착 화면 (오늘 배운 말, 써먹기 
 
 - 기본은 안드로이드 `TextToSpeech`(ko-KR)로 콘텐츠 팩의 문장 단위 음성 스크립트(`voice_sentences`)를 앱 안에서 바로 읽습니다. 문장 사이는 0.4초 쉽니다.
 - **Pleos Connect 에뮬레이터(v2.1.0)에는 쓸 수 있는 안드로이드 TTS 엔진이 없습니다.** 하나 있는 Pleos 음성 서비스는 초기화에 실패합니다(Pleos TextToSpeech SDK 는 공모전 기간에 쓸 수 없음). 그래서 개발 명세 7의 대비책을 구현했습니다.
-  - [`tools/gen_voice.ps1`](tools/gen_voice.ps1) 이 개발 PC 의 Windows 한국어 음성(Microsoft Heami)으로 같은 스크립트를 문장별 WAV(16kHz) 357개로 미리 변환해 `app/src/main/assets/voice/` 에 넣습니다. 인트로처럼 바뀌는 문장은 경우의 수(출근길·퇴근길·운전길 × 요즘말·그때말·말 × 0~5개)만큼 만듭니다.
+  - [`tools/gen_voice.ps1`](tools/gen_voice.ps1) 이 개발 PC 의 Windows 한국어 음성(Microsoft Heami)으로 같은 스크립트를 문장별 음성 357개로 미리 변환해 `app/src/main/assets/voice/` 에 넣습니다. 인트로처럼 바뀌는 문장은 경우의 수(출근길·퇴근길·운전길 × 요즘말·그때말·말 × 0~5개)만큼 만듭니다. 만든 WAV 는 [`tools/compress_voice.ps1`](tools/compress_voice.ps1) 이 Windows 기본 AAC 인코더로 m4a(16kHz mono 32kbps)로 압축합니다 (45MB → 약 7MB, 추가 설치 없음).
   - 앱은 기기 TTS 를 쓸 수 없으면 자동으로 이 파일을 재생합니다(설정 › 음성 상태: '내장 음성 사용 중'). 말하기 속도는 재생 속도로 맞춥니다.
   - 콘텐츠 팩 JSON 을 고치면 스크립트를 다시 실행해야 합니다.
 
@@ -199,7 +199,7 @@ P + 차속 0   마무리 멘트 → 도착 화면 (오늘 배운 말, 써먹기 
 
 ```bash
 ./gradlew :app:assembleDebug        # 개발용
-./gradlew :app:assembleRelease      # 제출용 (디버그 키 서명)
+./gradlew :app:assembleRelease      # 제출용 (디버그 키 서명, R8 코드 줄이기)
 ./gradlew :app:testDebugUnitTest    # 단위 테스트
 ```
 
@@ -232,7 +232,8 @@ app/src/main/java/com/kumhoht/sedaecha/
 ├── data/                    Progress Repository: Room DB (배운 말·남은 말·클래스 기록·운행·거리)
 └── ui/                      Compose 화면 (홈·도착·복습 퀴즈·내 말모음·심사용 데모·설정)
 tools/
-├── gen_voice.ps1            내장 음성 파일 만들기
+├── gen_voice.ps1            내장 음성 파일 만들기 (끝에 compress_voice.ps1 로 m4a 압축)
+├── compress_voice.ps1       내장 음성 WAV → m4a
 ├── drive_scenario.sh        Virtual Console 약 3분 운전 시나리오
 └── vc.sh                    Virtual Console HTTP 조작 함수
 ```

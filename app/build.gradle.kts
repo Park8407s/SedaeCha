@@ -28,10 +28,10 @@ android {
         release {
             // 공모전 제출용: 디버그 키로 서명해 바로 설치·실행되게 한다 (차곡차곡과 동일)
             signingConfig = signingConfigs.getByName("debug")
-            // R8 은 끈다: 붕붕냥에서 켰을 때 kotlin 라이브러리 IllegalAccessError 로 실행 직후 종료됨
-            optimization {
-                enable = false
-            }
+            // R8 로 쓰지 않는 코드를 지워 APK 를 줄인다 (Pleos SDK 는 proguard-rules.pro 에서 유지)
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
     compileOptions {
@@ -42,9 +42,9 @@ android {
         compose = true
         buildConfig = true
     }
-    // 내장 음성 파일(WAV)은 압축하지 않는다 (assets.openFd 로 바로 재생)
+    // 내장 음성 파일(m4a)은 압축하지 않는다 (assets.openFd 로 바로 재생, m4a 는 원래 압축 제외)
     androidResources {
-        noCompress += listOf("wav")
+        noCompress += listOf("m4a")
     }
     // Android Automotive 표준 차량 API (CarPropertyManager, CarUxRestrictionsManager)
     useLibrary("android.car")

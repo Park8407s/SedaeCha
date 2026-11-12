@@ -1,7 +1,7 @@
 # 음성 파일 모드(개발 명세 7 대비책)용 문장 음성 일괄 생성
 #
 # 콘텐츠 팩의 voice_sentences·퀴즈 음성·공통 멘트(인트로는 {route}·{mode_label}·{n} 의 경우의 수만큼)를
-# 이 PC 의 한국어 음성(Windows SAPI, Microsoft Heami)으로 읽어 WAV(16kHz mono) 로 저장한다.
+# 이 PC 의 한국어 음성(Windows SAPI, Microsoft Heami)으로 읽어 WAV(16kHz mono) 로 만든 뒤 m4a(AAC 32kbps)로 압축한다 (compress_voice.ps1).
 # 파일 이름은 문장 텍스트의 SHA-1 앞 16자리, 목록은 voice/index.json (문장 → 파일).
 # 앱은 기기에 한국어 TTS 가 없을 때만 이 파일을 재생한다 (SpeechPlayer).
 #
@@ -55,7 +55,10 @@ $index = [ordered]@{}
 $made = 0
 foreach ($text in ($texts | Select-Object -Unique)) {
     $hash = ($sha.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($text)) | ForEach-Object { $_.ToString("x2") }) -join ""
-    $name = $hash.Substring(0, 16) + ".wav"
+    $base = $hash.Substring(0, 16)
+    # 이미 압축한 파일(.m4a)이 있으면 그대로 쓰고, 없으면 WAV 로 만든 뒤 아래에서 압축한다
+    if (Test-Path (Join-Path $outDir "$base.m4a")) { $index[$text] = "$base.m4a"; continue }
+    $name = "$base.wav"
     $index[$text] = $name
     $file = Join-Path $outDir $name
     if (-not (Test-Path $file)) {
@@ -69,8 +72,11 @@ $synth.Dispose()
 
 # 쓰지 않는 파일 정리
 $keep = @($index.Values)
-Get-ChildItem $outDir -Filter *.wav | Where-Object { $keep -notcontains $_.Name } | Remove-Item
+Get-ChildItem $outDir -File | Where-Object { $_.Extension -in ".wav", ".m4a" -and $keep -notcontains $_.Name } | Remove-Item
 
 $json = $index | ConvertTo-Json -Compress
 [System.IO.File]::WriteAllText((Join-Path $outDir "index.json"), $json, (New-Object System.Text.UTF8Encoding($false)))
 "voice: $($index.Count) sentences, $made new, engine=$($voice.VoiceInfo.Name)"
+
+# WAV → m4a (APK 용량 줄이기)
+& (Join-Path $PSScriptRoot "compress_voice.ps1")
