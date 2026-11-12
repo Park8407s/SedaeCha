@@ -1,0 +1,14 @@
+*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+build/
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+.kotlin
+
+# 작업용 (저장소에 올리지 않음): 기획 자료·화면 시안
+/docs/reference/

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 임시 아이콘: 라디오 전파 (가운데 점 + 양쪽 호 두 겹) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:fillColor="#FFFF9F5A" android:pathData="M48,54 a6,6 0,1 0,12 0 a6,6 0,1 0,-12 0 Z" />
+    <path android:strokeColor="#FFFF9F5A" android:strokeWidth="5" android:strokeLineCap="round"
+        android:pathData="M66.7,41.3 a18,18 0,0 1,0 25.4 M41.3,66.7 a18,18 0,0 1,0 -25.4" />
+    <path android:strokeColor="#FFFFD2B0" android:strokeWidth="5" android:strokeLineCap="round"
+        android:pathData="M75.2,32.8 a30,30 0,0 1,0 42.4 M32.8,75.2 a30,30 0,0 1,0 -42.4" />
+</vector>

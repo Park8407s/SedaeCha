@@ -1,0 +1,8 @@
+<resources>
+    <!-- 화면은 Compose(ui/theme)가 그린다. 여기서는 상단 바를 없애고 배경색만 맞춘다. -->
+    <style name="Theme.SedaeCha" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowBackground">#FF0F141C</item>
+        <item name="android:statusBarColor">#FF0F141C</item>
+        <item name="android:navigationBarColor">#FF0F141C</item>
+    </style>
+</resources>
